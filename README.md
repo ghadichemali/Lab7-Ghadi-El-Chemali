@@ -59,3 +59,4 @@ and send the requests (or run the whole collection with the Collection Runner).
 1. Database functions committed on `main`.
 2. REST endpoints added on branch `rest-api`.
 3. `rest-api` merged into `main`.
+

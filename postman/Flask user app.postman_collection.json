@@ -1,0 +1,526 @@
+{
+  "info": {
+    "_postman_id": "35b0ee9b-052f-42e5-bc20-fad735614174",
+    "name": "Flask user app",
+    "description": "Requests that test the Flask user management REST API (Lab 5 - Postman and APIs).\n\nThe server URL is stored in the environment variable `base_url` (http://localhost:5000). Select the \"Flask user app - local\" environment before sending requests.\n\n| # | Endpoint | Method | Description |\n|---|---|---|---|\n| 1 | {{base_url}}/api/users | GET | Get the list of all users in the database |\n| 2 | {{base_url}}/api/users/<user_id> | GET | Get a single user record that matches the id |\n| 3 | {{base_url}}/api/users/add | POST | Create a new user record |\n| 4 | {{base_url}}/api/users/update | PUT | Update a user record |\n| 5 | {{base_url}}/api/users/delete/<user_id> | DELETE | Delete a user record |",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Add user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Inserted user is returned with a user_id\", function () {",
+              "    const u = pm.response.json();",
+              "    pm.expect(u).to.have.property(\"user_id\");",
+              "    pm.expect(u.name).to.eql(\"John Doe\");",
+              "});",
+              "// save the new user id for the other requests",
+              "pm.environment.set(\"user_id\", pm.response.json().user_id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users/add",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "add"
+          ]
+        },
+        "description": "Creates a new user record. The user_id is generated automatically by the database and the inserted user is returned.\n\nThe test script saves the returned user_id into the environment variable `user_id`, which the other requests use.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"jondoe@gamil.com\",\n    \"phone\": \"067765434567\",\n    \"address\": \"John Doe Street, Innsbruck\",\n    \"country\": \"Austria\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [
+        {
+          "name": "User created",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "add"
+              ]
+            },
+            "description": "Creates a new user record. The user_id is generated automatically by the database and the inserted user is returned.\n\nThe test script saves the returned user_id into the environment variable `user_id`, which the other requests use.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"jondoe@gamil.com\",\n    \"phone\": \"067765434567\",\n    \"address\": \"John Doe Street, Innsbruck\",\n    \"country\": \"Austria\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "Werkzeug/3.1.8 Python/3.13.16"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 07 Oct 2026 21:59:41 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "141"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"address\": \"John Doe Street, Innsbruck\",\n    \"country\": \"Austria\",\n    \"email\": \"jondoe@gamil.com\",\n    \"name\": \"John Doe\",\n    \"phone\": \"067765434567\",\n    \"user_id\": 1\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get all users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Response is a non-empty array of users\", function () {",
+              "    pm.expect(pm.response.json()).to.be.an(\"array\").that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users"
+          ]
+        },
+        "description": "Returns the list of all users in the database."
+      },
+      "response": [
+        {
+          "name": "List of all users",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Returns the list of all users in the database."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "Werkzeug/3.1.8 Python/3.13.16"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 07 Oct 2026 21:59:41 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "288"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "cookie": [],
+          "body": "[\n    {\n        \"address\": \"John Doe Street, Innsbruck\",\n        \"country\": \"Austria\",\n        \"email\": \"jondoe@gamil.com\",\n        \"name\": \"John Doe\",\n        \"phone\": \"067765434567\",\n        \"user_id\": 1\n    },\n    {\n        \"address\": \"Bliss Street, Beirut\",\n        \"country\": \"Lebanon\",\n        \"email\": \"gee11@mail.aub.edu\",\n        \"name\": \"Ghadi El Chemali\",\n        \"phone\": \"+96170123456\",\n        \"user_id\": 2\n    }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Get user by id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Returned user has the requested user_id\", function () {",
+              "    pm.expect(pm.response.json().user_id).to.eql(Number(pm.environment.get(\"user_id\")));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users/{{user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "{{user_id}}"
+          ]
+        },
+        "description": "Returns the single user record matching the given user_id (taken from the `user_id` environment variable)."
+      },
+      "response": [
+        {
+          "name": "Single user record",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{user_id}}"
+              ]
+            },
+            "description": "Returns the single user record matching the given user_id (taken from the `user_id` environment variable)."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "Werkzeug/3.1.8 Python/3.13.16"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 07 Oct 2026 21:59:41 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "141"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"address\": \"John Doe Street, Innsbruck\",\n    \"country\": \"Austria\",\n    \"email\": \"jondoe@gamil.com\",\n    \"name\": \"John Doe\",\n    \"phone\": \"067765434567\",\n    \"user_id\": 1\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Updated values are returned\", function () {",
+              "    const u = pm.response.json();",
+              "    pm.expect(u.user_id).to.eql(Number(pm.environment.get(\"user_id\")));",
+              "    pm.expect(u.name).to.eql(\"John Smith\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users/update",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "update"
+          ]
+        },
+        "description": "Updates the user record whose user_id is given in the body and returns the updated user.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"jondoe@gamil.com\",\n    \"phone\": \"067765000000\",\n    \"address\": \"Maria-Theresien-Strasse 1, Innsbruck\",\n    \"country\": \"Austria\",\n    \"user_id\": {{user_id}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [
+        {
+          "name": "User updated",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "update"
+              ]
+            },
+            "description": "Updates the user record whose user_id is given in the body and returns the updated user.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"jondoe@gamil.com\",\n    \"phone\": \"067765000000\",\n    \"address\": \"Maria-Theresien-Strasse 1, Innsbruck\",\n    \"country\": \"Austria\",\n    \"user_id\": {{user_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "Werkzeug/3.1.8 Python/3.13.16"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 07 Oct 2026 21:59:41 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "153"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"address\": \"Maria-Theresien-Strasse 1, Innsbruck\",\n    \"country\": \"Austria\",\n    \"email\": \"jondoe@gamil.com\",\n    \"name\": \"John Smith\",\n    \"phone\": \"067765000000\",\n    \"user_id\": 1\n}"
+        }
+      ]
+    },
+    {
+      "name": "Delete user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "pm.test(\"Status message is returned\", function () {",
+              "    pm.expect(pm.response.json().status).to.eql(\"User deleted successfully\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/users/delete/{{user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "delete",
+            "{{user_id}}"
+          ]
+        },
+        "description": "Deletes the user record matching the given user_id and returns a status message."
+      },
+      "response": [
+        {
+          "name": "User deleted",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users/delete/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "delete",
+                "{{user_id}}"
+              ]
+            },
+            "description": "Deletes the user record matching the given user_id and returns a status message."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "Werkzeug/3.1.8 Python/3.13.16"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 07 Oct 2026 21:59:41 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "39"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"status\": \"User deleted successfully\"\n}"
+        }
+      ]
+    }
+  ]
+}
